@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Add customer</h1><p class="sub">The customer is saved to the dataset and automatically assigned to a segment. Fields marked ★ are clustering features.</p>
+<div class="card" style="max-width:640px"><form method="post">
+  {% for f in fields %}
+    <label>{{ f.name }} {% if f.is_feature %}★{% endif %}</label>
+    {% if f.type == 'select' %}
+      <select name="col_{{ f.name }}"><option value="">—</option>{% for o in f.options %}<option>{{ o }}</option>{% endfor %}</select>
+    {% elif f.type == 'number' %}
+      <input type="number" step="any" name="col_{{ f.name }}" value="{{ f.value }}" {{ 'required' if f.is_feature }}>
+    {% else %}
+      <input type="text" name="col_{{ f.name }}" value="{{ f.value }}">
+    {% endif %}
+  {% endfor %}
+  <p><button class="btn">Add &amp; assign segment</button> <a class="btn sec" href="{{ url_for('customers') }}">Cancel</a></p>
+</form></div>
+{% endblock %}

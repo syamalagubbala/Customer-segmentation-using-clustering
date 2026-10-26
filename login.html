@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ 'Admin' if role == 'admin' else 'User' }} Login - Customer Segmentation</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><div class="auth"><div class="box">
+  <h2>📊 Customer Segmentation</h2><p class="sub">Sign in to continue</p>
+  <div class="tabs">
+    <a href="{{ url_for('login') }}" class="{{ 'active' if role == 'user' }}">👤 User Login</a>
+    <a href="{{ url_for('admin_login') }}" class="{{ 'active' if role == 'admin' }}">🛡️ Admin Login</a>
+  </div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+  {% endwith %}
+  <form method="post">
+    <label>Username</label><input type="text" name="username" required autofocus>
+    <label>Password</label><input type="password" name="password" required>
+    <p style="text-align:right;margin:8px 0 0;font-size:13.5px"><a href="{{ url_for('forgot_password', role=role) }}">Forgot password?</a></p>
+    <p><button class="btn" style="width:100%">{{ 'Admin' if role == 'admin' else 'User' }} Login</button></p>
+  </form>
+  {% if role == 'user' %}<p style="font-size:14px">No account? <a href="{{ url_for('register') }}">Register</a></p>{% endif %}
+</div></div></body></html>

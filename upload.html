@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Upload dataset</h1><p class="sub">Add a customer CSV file. It needs a header row and at least 2 numeric columns (e.g. Age, Income, Spending).</p>
+<div class="grid g2">
+  <div class="card"><h3>📁 Upload your CSV</h3>
+    <form method="post" enctype="multipart/form-data">
+      <input type="file" name="file" accept=".csv" required>
+      <p><button class="btn">Upload &amp; continue</button></p>
+    </form>
+    <p class="sub" style="font-size:13px;margin:0">Uploading a new file replaces the current dataset and model.</p>
+  </div>
+  <div class="card"><h3>🧪 Try the sample data</h3>
+    <p>200 mall customers with Age, Annual Income and Spending Score.</p>
+    <form method="post"><input type="hidden" name="use_sample" value="1"><button class="btn sec">Use sample dataset</button></form>
+  </div>
+</div>
+{% endblock %}

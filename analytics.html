@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row" style="justify-content:space-between"><div><h1>Analytics</h1><p class="sub">{{ meta.k }} segments · features: {{ features|join(', ') }}</p></div>
+<a class="btn sec" href="{{ url_for('download') }}">⬇ Download segmented CSV</a></div>
+
+<div class="grid g4">
+  <div class="card"><div class="stat">{{ metrics.silhouette }}</div><div class="stat-l">Silhouette (higher is better)</div></div>
+  <div class="card"><div class="stat">{{ metrics.davies_bouldin }}</div><div class="stat-l">Davies-Bouldin (lower is better)</div></div>
+  <div class="card"><div class="stat">{{ metrics.inertia }}</div><div class="stat-l">Inertia (WCSS)</div></div>
+  <div class="card"><div class="stat">{{ metrics.variance_explained }}%</div><div class="stat-l">Variance shown in 2D plot</div></div>
+</div>
+
+<div class="card"><h3>💡 Key insights</h3><ul class="ins">{% for i in insights %}<li>{{ i }}</li>{% endfor %}</ul></div>
+
+<div class="grid g2">
+  <div class="card"><h3>Segment sizes</h3><div class="chart-box"><canvas id="sizes"></canvas></div></div>
+  <div class="card"><h3>Cluster map (PCA 2D)</h3><div class="chart-box"><canvas id="pca"></canvas></div></div>
+  <div class="card"><h3>Segment profile (vs. overall average, in std. deviations)</h3><div class="chart-box"><canvas id="profile"></canvas></div></div>
+  <div class="card"><h3>Choosing K: silhouette &amp; elbow</h3><div class="chart-box"><canvas id="elbow"></canvas></div></div>
+  {% for cc in cat_cols %}
+  <div class="card"><h3>{{ cc }} by segment</h3><div class="chart-box"><canvas id="cat_{{ loop.index0 }}"></canvas></div></div>
+  {% endfor %}
+</div>
+
+<div class="card"><h3>Segment summary (feature averages)</h3><div class="table-wrap"><table class="table">
+  <thead><tr><th>Segment</th><th>Customers</th><th>Share</th>{% for f in features %}<th>{{ f }}</th>{% endfor %}</tr></thead><tbody>
+  {% for r in table %}<tr><td><b>{{ r.name }}</b></td><td>{{ r.count }}</td><td>{{ r.pct }}%</td>{% for m in r.means %}<td>{{ m }}</td>{% endfor %}</tr>{% endfor %}
+  </tbody></table></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+const D = {{ payload|tojson }};
+const COLORS = ['#4f46e5','#f59e0b','#10b981','#ef4444','#06b6d4','#8b5cf6','#ec4899','#84cc16','#f97316','#64748b'];
+const common = {responsive:true, maintainAspectRatio:false};
+const keys = Object.keys(D.scatter);
+
+new Chart(document.getElementById('sizes'), {type:'doughnut',
+  data:{labels:D.labels, datasets:[{data:D.sizes, backgroundColor:COLORS}]}, options:common});
+
+new Chart(document.getElementById('pca'), {type:'scatter',
+  data:{datasets:[
+    ...keys.map((k,i)=>({label:'Segment '+(+k+1), data:D.scatter[k], backgroundColor:COLORS[i%10]+'bb', pointRadius:3.5})),
+    {label:'Centroids', data:D.centroids, backgroundColor:'#000', pointStyle:'crossRot', pointRadius:9, borderWidth:3, borderColor:'#000'}
+  ]}, options:{...common, scales:{x:{title:{display:true,text:'PC1'}}, y:{title:{display:true,text:'PC2'}}}}});
+
+new Chart(document.getElementById('profile'), {type:'bar',
+  data:{labels:D.features, datasets:keys.map((k,i)=>({label:'Segment '+(+k+1), data:D.z[k], backgroundColor:COLORS[i%10]}))},
+  options:common});
+
+new Chart(document.getElementById('elbow'), {type:'line',
+  data:{labels:D.scores.map(s=>s.k), datasets:[
+    {label:'Silhouette', data:D.scores.map(s=>s.silhouette), borderColor:'#4f46e5', yAxisID:'y', tension:.3},
+    {label:'Inertia', data:D.scores.map(s=>s.inertia), borderColor:'#f59e0b', yAxisID:'y1', tension:.3}]},
+  options:{...common, scales:{x:{title:{display:true,text:'K'}}, y:{position:'left',title:{display:true,text:'Silhouette'}}, y1:{position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'Inertia'}}}}});
+
+Object.entries(D.cat).forEach(([name, c], i)=>{
+  new Chart(document.getElementById('cat_'+i), {type:'bar',
+    data:{labels:c.labels, datasets:c.datasets.map((d,j)=>({...d, backgroundColor:COLORS[j%10]}))},
+    options:{...common, scales:{x:{stacked:true}, y:{stacked:true}}}});
+});
+</script>
+{% endblock %}

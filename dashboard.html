@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="sub">Welcome back, {{ session.user }}. {% if meta.dataset_name %}Dataset: <b>{{ meta.dataset_name }}</b>{% endif %}{% if meta.trained_at %} · Last clustered {{ meta.trained_at }}{% endif %}</p>
+
+{% if stats %}
+<div class="grid g4">
+  <div class="card"><div class="stat">{{ stats.total }}</div><div class="stat-l">Total customers</div></div>
+  <div class="card"><div class="stat">{{ stats.k }}</div><div class="stat-l">Segments (clusters)</div></div>
+  <div class="card"><div class="stat">{{ stats.features }}</div><div class="stat-l">Features used</div></div>
+  <div class="card"><div class="stat">{{ stats.silhouette }}</div><div class="stat-l">Silhouette score</div></div>
+</div>
+<div class="card"><h3>Segment overview</h3>
+  {% for s in stats.segments %}
+  <div style="margin-bottom:14px"><div class="row" style="justify-content:space-between"><b>{{ s.name }}</b><span>{{ s.count }} ({{ s.pct }}%)</span></div>
+  <div class="bar"><div style="width:{{ s.pct }}%"></div></div></div>
+  {% endfor %}
+</div>
+<div class="row">
+  <a class="btn" href="{{ url_for('analytics') }}">View analytics</a>
+  <a class="btn sec" href="{{ url_for('add_customer') }}">Add customer</a>
+  <a class="btn sec" href="{{ url_for('predict') }}">Predict segment</a>
+  <a class="btn sec" href="{{ url_for('configure') }}">Re-run clustering</a>
+  <a class="btn sec" href="{{ url_for('download') }}">Download CSV</a>
+  <form method="post" action="{{ url_for('reset') }}" onsubmit="return confirm('Delete the dataset and model?')"><button class="btn danger">Reset</button></form>
+</div>
+{% elif df_loaded %}
+<div class="card empty"><h3>Dataset uploaded</h3><p>Choose your features and run clustering to see results.</p><a class="btn" href="{{ url_for('configure') }}">Run clustering</a></div>
+{% else %}
+<div class="card empty"><h3>No dataset yet</h3><p>Upload a customer CSV file (or use the sample) to get started.</p><a class="btn" href="{{ url_for('upload') }}">Upload CSV</a></div>
+{% endif %}
+{% endblock %}

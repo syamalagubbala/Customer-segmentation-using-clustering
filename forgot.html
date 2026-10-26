@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forgot Password - Customer Segmentation</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><div class="auth"><div class="box">
+  <h2>🔑 Forgot password</h2>
+  <p class="sub">{{ 'Admin' if role == 'admin' else 'User' }} account recovery</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+  {% endwith %}
+
+  {% if step == 1 %}
+  <form method="post">
+    <input type="hidden" name="role" value="{{ role }}"><input type="hidden" name="action" value="send">
+    <label>Username, email or mobile number</label>
+    <input type="text" name="identifier" required autofocus placeholder="e.g. john / john@mail.com / 9876543210">
+    <label>Send OTP via</label>
+    <div class="row">
+      <label style="font-weight:500;margin:0"><input type="radio" name="method" value="email" checked> 📧 Email</label>
+      <label style="font-weight:500;margin:0"><input type="radio" name="method" value="sms"> 📱 Mobile (SMS)</label>
+    </div>
+    <p><button class="btn" style="width:100%">Send OTP</button></p>
+  </form>
+  {% else %}
+  {% if dev_mode %}
+  <div class="flash warning" style="font-size:13px">Development mode: {{ 'email (SMTP)' if method == 'email' else 'SMS (Twilio)' }} is not configured, so the OTP is printed in the terminal where the app is running.</div>
+  {% endif %}
+  <form method="post">
+    <input type="hidden" name="role" value="{{ role }}"><input type="hidden" name="action" value="reset">
+    <label>Enter 6-digit OTP</label>
+    <input type="text" name="otp" required autofocus inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="______" style="letter-spacing:6px;font-size:18px">
+    <label>New password (min 6 chars)</label><input type="password" name="new_password" required minlength="6">
+    <label>Confirm new password</label><input type="password" name="confirm_password" required minlength="6">
+    <p><button class="btn" style="width:100%">Reset password</button></p>
+  </form>
+  <form method="post" style="text-align:center;margin-bottom:10px">
+    <input type="hidden" name="role" value="{{ role }}"><input type="hidden" name="action" value="resend">
+    <span style="font-size:13.5px;color:var(--muted)">OTP valid for {{ valid_minutes }} minutes. Didn't get it?</span>
+    <button class="btn sec sm" style="margin-left:6px">Resend OTP</button>
+  </form>
+  {% endif %}
+  <p style="font-size:14px"><a href="{{ url_for(login_endpoint) }}">← Back to login</a></p>
+</div></div></body></html>

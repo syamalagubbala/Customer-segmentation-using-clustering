@@ -1,0 +1,66 @@
+{
+  "features": [
+    "Age",
+    "Annual Income (k$)",
+    "Spending Score (1-100)"
+  ],
+  "k": 5,
+  "auto_k": true,
+  "id_col": "CustomerID",
+  "scores": [
+    {
+      "k": 2,
+      "inertia": 331.0435915788289,
+      "silhouette": 0.4181805528689598
+    },
+    {
+      "k": 3,
+      "inertia": 233.61128361178203,
+      "silhouette": 0.42078326489988627
+    },
+    {
+      "k": 4,
+      "inertia": 148.02501953017997,
+      "silhouette": 0.496402747079493
+    },
+    {
+      "k": 5,
+      "inertia": 91.5368163907888,
+      "silhouette": 0.5410234227391535
+    },
+    {
+      "k": 6,
+      "inertia": 81.56120422912086,
+      "silhouette": 0.500059920359876
+    },
+    {
+      "k": 7,
+      "inertia": 73.13220138462431,
+      "silhouette": 0.4721438833192988
+    },
+    {
+      "k": 8,
+      "inertia": 65.98399398794938,
+      "silhouette": 0.4318435949106875
+    },
+    {
+      "k": 9,
+      "inertia": 59.486660958228065,
+      "silhouette": 0.38587073708361386
+    },
+    {
+      "k": 10,
+      "inertia": 56.68288353106705,
+      "silhouette": 0.37932519025959777
+    }
+  ],
+  "segment_names": {
+    "0": "Segment 1: High Spending Score (1-100), High Annual Income (k$), Low Age",
+    "1": "Segment 2: Low Annual Income (k$), Low Spending Score (1-100), High Age",
+    "2": "Segment 3: Low Age, High Spending Score (1-100), Low Annual Income (k$)",
+    "3": "Segment 4: High Annual Income (k$), Low Spending Score (1-100)",
+    "4": "Segment 5: High Age"
+  },
+  "trained_at": "2026-10-25 19:54",
+  "dataset_name": "customers_sample.csv"
+}

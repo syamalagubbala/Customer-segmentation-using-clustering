@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Run clustering</h1><p class="sub">{{ rows }} rows loaded from <b>{{ meta.dataset_name }}</b>. Select the features K-Means should use.</p>
+<div class="card"><h3>Data preview</h3><div class="table-wrap">{{ preview|safe }}</div></div>
+<form method="post">
+<div class="card"><h3>1. Features (numeric columns)</h3>
+  <div class="checks">
+  {% for c in num_cols %}<label><input type="checkbox" name="features" value="{{ c }}" {{ 'checked' if c in selected }}> {{ c }}</label>{% endfor %}
+  </div>
+  <label>Customer ID column (optional – used to auto-number new customers)</label>
+  <select name="id_col"><option value="">None</option>
+    {% for c in columns %}<option value="{{ c }}" {{ 'selected' if c==guess_id }}>{{ c }}</option>{% endfor %}
+  </select>
+</div>
+<div class="card"><h3>2. Number of clusters</h3>
+  <label style="font-weight:500"><input type="radio" name="k_mode" value="auto" checked> Automatic (best silhouette score, K = 2–10)</label>
+  <label style="font-weight:500"><input type="radio" name="k_mode" value="manual"> Manual:</label>
+  <input type="number" name="k" value="{{ meta.k or 4 }}" min="2" max="10" style="width:120px">
+</div>
+<button class="btn">🚀 Run K-Means clustering</button>
+</form>
+{% endblock %}
